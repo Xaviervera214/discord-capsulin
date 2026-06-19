@@ -136,8 +136,58 @@ def rotacion_limpia():
 
     return rotacion
 
-rotacion = rotacion_limpia()
+def productos_rotacion_baja():
 
-print("\nRotación limpia:")
-print(rotacion.head(10))
-print(rotacion.info())
+    rotacion = rotacion_limpia()
+
+    productos = rotacion[
+        rotacion["rotacion"] < 0.5
+    ].copy()
+
+    return productos
+
+
+def productos_sin_salidas():
+
+    rotacion = rotacion_limpia()
+
+    productos = rotacion[
+        rotacion["salidas"] == 0
+    ].copy()
+
+    return productos
+
+def productos_por_pedir_sin_salidas():
+
+    productos = productos_por_pedir()
+    sin_salidas = productos_sin_salidas()
+
+    resultado = productos.merge(
+        sin_salidas,
+        on="articulo",
+        how="inner",
+        suffixes=("_situacion", "_rotacion")
+    )
+
+    return resultado
+
+rotacion_baja = productos_rotacion_baja()
+
+print("\nProductos con rotación baja:")
+print(len(rotacion_baja))
+
+sin_salidas = productos_sin_salidas()
+
+print("\nProductos sin salidas:")
+print(len(sin_salidas))
+sospechosos = productos_por_pedir_sin_salidas()
+
+print("\nProductos por pedir sin salidas:")
+print(len(sospechosos))
+
+print("\nSospechosos:")
+print(sospechosos[[
+    "articulo",
+    "por_pedir",
+    "existencia"
+]])
