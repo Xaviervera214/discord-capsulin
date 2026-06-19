@@ -1,7 +1,5 @@
-import pandas as pd
+from inventario import cargar_situacion
 
-archivo = "data/VENTAS POR ARTICULO.xlsx"
+situacion = cargar_situacion()
 
-df = pd.read_excel(archivo, header=None)
-
-print(df.iloc[0:15, 0:25].to_string())
+print(situacion.head(10))
