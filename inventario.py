@@ -25,3 +25,19 @@ def cargar_situacion():
     situacion = situacion.dropna(subset=["articulo"])
 
     return situacion
+
+def productos_por_pedir():
+    situacion = cargar_situacion()
+    productos = situacion[situacion["por_pedir"] > 0].copy()
+    return productos
+
+def valor_total_por_pedir():
+    productos = productos_por_pedir()
+    total = productos["valor_por_pedir"].sum()
+    return total
+
+productos = productos_por_pedir()
+total = valor_total_por_pedir()
+
+print("Productos por pedir:", len(productos))
+print(f"Valor total por pedir: ${total:,.2f}")
