@@ -59,19 +59,22 @@ def resumen_ejecutivo():
     producto_critico = top_productos_criticos().iloc[0]
     producto_valor = top_valor_por_pedir().iloc[0]
 
-    print("\nRESUMEN CAPSULIN")
-    print("-" * 40)
+    resumen = f"""
+RESUMEN CAPSULIN
+----------------------------------------
+Productos por pedir: {total_productos}
+Valor total por pedir: ${valor_total:,.2f}
 
-    print(f"Productos por pedir: {total_productos}")
-    print(f"Valor total por pedir: ${valor_total:,.2f}")
+Mayor urgencia:
+{producto_critico["articulo"]}
+Por pedir: {producto_critico["por_pedir"]}
 
-    print("\nMayor urgencia:")
-    print(producto_critico["articulo"])
-    print(f"Por pedir: {producto_critico['por_pedir']}")
+Mayor inversión:
+{producto_valor["articulo"]}
+Valor por pedir: ${producto_valor["valor_por_pedir"]:,.2f}
+"""
 
-    print("\nMayor inversión:")
-    print(producto_valor["articulo"])
-    print(f"Valor por pedir: ${producto_valor['valor_por_pedir']:,.2f}")
+    return resumen
 
 productos = productos_por_pedir()
 total = valor_total_por_pedir()
@@ -88,4 +91,4 @@ print("\nTop valor por pedir:")
 print(top_valor_por_pedir())
 
 print("\nResumen ejecutivo:")
-resumen_ejecutivo()
+print(resumen_ejecutivo())
