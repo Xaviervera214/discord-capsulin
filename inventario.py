@@ -26,6 +26,11 @@ def cargar_situacion():
 
     return situacion
 
+def cargar_rotacion():
+    archivo = "data/ROTACION DE INVENTARIO.xlsx"
+    rotacion = pd.read_excel(archivo, header=None)
+    return rotacion
+
 def productos_por_pedir():
     situacion = cargar_situacion()
     productos = situacion[situacion["por_pedir"] > 0].copy()
@@ -92,3 +97,47 @@ print(top_valor_por_pedir())
 
 print("\nResumen ejecutivo:")
 print(resumen_ejecutivo())
+
+situacion = cargar_situacion()
+print(situacion.columns)
+
+rotacion = cargar_rotacion()
+
+def rotacion_limpia():
+
+    df = cargar_rotacion()
+
+    datos = df.iloc[6:].copy()
+
+    rotacion = pd.DataFrame({
+        "articulo": datos.iloc[:, 0],
+        "unidad": datos.iloc[:, 9],
+        "salidas": datos.iloc[:, 13],
+        "inventario_promedio": datos.iloc[:, 16],
+        "rotacion": datos.iloc[:, 18]
+    })
+
+    rotacion = rotacion.dropna(subset=["articulo"])
+
+    rotacion["salidas"] = pd.to_numeric(
+        rotacion["salidas"],
+        errors="coerce"
+    )
+
+    rotacion["inventario_promedio"] = pd.to_numeric(
+        rotacion["inventario_promedio"],
+        errors="coerce"
+    )
+
+    rotacion["rotacion"] = pd.to_numeric(
+        rotacion["rotacion"],
+        errors="coerce"
+    )
+
+    return rotacion
+
+rotacion = rotacion_limpia()
+
+print("\nRotación limpia:")
+print(rotacion.head(10))
+print(rotacion.info())
