@@ -48,6 +48,31 @@ def top_valor_por_pedir():
     top = productos.sort_values(by="valor_por_pedir", ascending=False)
     return top.head(10)
 
+
+def resumen_ejecutivo():
+
+    productos = productos_por_pedir()
+
+    total_productos = len(productos)
+    valor_total = valor_total_por_pedir()
+
+    producto_critico = top_productos_criticos().iloc[0]
+    producto_valor = top_valor_por_pedir().iloc[0]
+
+    print("\nRESUMEN CAPSULIN")
+    print("-" * 40)
+
+    print(f"Productos por pedir: {total_productos}")
+    print(f"Valor total por pedir: ${valor_total:,.2f}")
+
+    print("\nMayor urgencia:")
+    print(producto_critico["articulo"])
+    print(f"Por pedir: {producto_critico['por_pedir']}")
+
+    print("\nMayor inversión:")
+    print(producto_valor["articulo"])
+    print(f"Valor por pedir: ${producto_valor['valor_por_pedir']:,.2f}")
+
 productos = productos_por_pedir()
 total = valor_total_por_pedir()
 
@@ -61,3 +86,6 @@ print(top_productos_criticos())
 
 print("\nTop valor por pedir:")
 print(top_valor_por_pedir())
+
+print("\nResumen ejecutivo:")
+resumen_ejecutivo()
