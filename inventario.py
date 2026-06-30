@@ -185,6 +185,20 @@ def alertas_rotacion_baja_por_pedir():
 
     return alertas
 
+def motor_alertas_inteligentes():
+
+    alertas = alertas_rotacion_baja_por_pedir().copy()
+
+    alertas["alerta_rotacion_baja"] = True
+    alertas["prioridad"] = "MEDIA"
+
+    alertas["motivo_alerta"] = (
+        "Producto por pedir con rotación baja. "
+        "Conviene revisar antes de incluirlo en el pedido."
+    )
+
+    return alertas
+
 rotacion_baja = productos_rotacion_baja()
 
 print("\nProductos con rotación baja:")
@@ -216,4 +230,16 @@ print(alertas[[
     "existencia",
     "por_pedir",
     "rotacion"
+]].head(15))
+
+motor_alertas = motor_alertas_inteligentes()
+
+print("\nMotor de Alertas Inteligentes:")
+print(motor_alertas[[
+    "articulo",
+    "existencia",
+    "por_pedir",
+    "rotacion",
+    "prioridad",
+    "motivo_alerta"
 ]].head(15))
