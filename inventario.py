@@ -171,6 +171,20 @@ def productos_por_pedir_sin_salidas():
 
     return resultado
 
+def alertas_rotacion_baja_por_pedir():
+
+    productos = productos_por_pedir()
+    rotacion_baja = productos_rotacion_baja()
+
+    alertas = productos.merge(
+        rotacion_baja,
+        on="articulo",
+        how="inner",
+        suffixes=("_situacion", "_rotacion")
+    )
+
+    return alertas
+
 rotacion_baja = productos_rotacion_baja()
 
 print("\nProductos con rotación baja:")
@@ -191,3 +205,15 @@ print(sospechosos[[
     "por_pedir",
     "existencia"
 ]])
+
+alertas = alertas_rotacion_baja_por_pedir()
+
+print("\nAlertas: productos por pedir con rotación baja:")
+print(len(alertas))
+
+print(alertas[[
+    "articulo",
+    "existencia",
+    "por_pedir",
+    "rotacion"
+]].head(15))
