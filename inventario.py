@@ -185,6 +185,29 @@ def alertas_rotacion_baja_por_pedir():
 
     return alertas
 
+def crear_hallazgo(
+    titulo,
+    categoria,
+    prioridad,
+    nivel_confianza,
+    descripcion,
+    impacto,
+    criterio_utilizado,
+    recomendacion,
+    datos
+):
+    return {
+        "titulo": titulo,
+        "categoria": categoria,
+        "prioridad": prioridad,
+        "nivel_confianza": nivel_confianza,
+        "descripcion": descripcion,
+        "impacto": impacto,
+        "criterio_utilizado": criterio_utilizado,
+        "recomendacion": recomendacion,
+        "datos": datos
+    }
+
 def alerta_valor_alto(df, top_n=10):
     productos = df[df["por_pedir"] > 0].copy()
 
