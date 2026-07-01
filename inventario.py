@@ -185,6 +185,74 @@ def alertas_rotacion_baja_por_pedir():
 
     return alertas
 
+def alerta_valor_alto(df, top_n=10):
+    productos = df[df["por_pedir"] > 0].copy()
+
+    if productos.empty:
+        return {
+            "titulo": "Productos con mayor inversión por comprar",
+            "prioridad": "Baja",
+            "descripcion": "No hay productos con pedido sugerido.",
+            "recomendacion": "No se requiere revisión por inversión.",
+            "datos": productos
+        }
+
+    productos = productos.sort_values(
+        by="valor_por_pedir",
+        ascending=False
+    )
+
+    top_productos = productos.head(top_n)
+
+    valor_total = productos["valor_por_pedir"].sum()
+    valor_top = top_productos["valor_por_pedir"].sum()
+
+    porcentaje = (valor_top / valor_total) * 100 if valor_total > 0 else 0
+
+    return {
+        "titulo": "Productos con mayor inversión por comprar",
+        "prioridad": "Alta",
+        "descripcion": f"Los {len(top_productos)} productos principales concentran ${valor_top:,.2f}, equivalente al {porcentaje:.2f}% del valor total por pedir.",
+        "recomendacion": "Revise estos productos antes de autorizar la compra, porque concentran la mayor parte del dinero a invertir.",
+        "datos": top_productos
+    }
+
+def mostrar_hallazgo(hallazgo):
+    print("\n" + "=" * 70)
+    print(hallazgo["titulo"].upper())
+    print("=" * 70)
+    print(f"Prioridad: {hallazgo['prioridad']}")
+    print(f"Descripción: {hallazgo['descripcion']}")
+    print(f"Recomendación: {hallazgo['recomendacion']}")
+
+    datos = hallazgo["datos"]
+
+    if not datos.empty:
+        columnas = [
+            "codigo",
+            "articulo",
+            "unidad",
+            "existencia",
+            "por_pedir",
+            "ultimo_costo",
+            "valor_por_pedir"
+        ]
+
+        print("\nProductos detectados:")
+        print(datos[columnas].to_string(index=False))
+
+def ejecutar_hallazgos():
+
+    situacion = cargar_situacion()
+
+    hallazgos = []
+
+    hallazgos.append(
+        alerta_valor_alto(situacion)
+    )
+
+    return hallazgos
+
 def motor_alertas_inteligentes():
 
     alertas = alertas_rotacion_baja_por_pedir().copy()
@@ -243,3 +311,9 @@ print(motor_alertas[[
     "prioridad",
     "motivo_alerta"
 ]].head(15))
+
+hallazgos = ejecutar_hallazgos()
+
+for hallazgo in hallazgos:
+    mostrar_hallazgo(hallazgo)
+
