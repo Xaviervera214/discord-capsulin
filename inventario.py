@@ -217,6 +217,50 @@ def alerta_valor_alto(df, top_n=10):
         "datos": top_productos
     }
 
+    return {
+        "titulo": "Productos con mayor inversión por comprar",
+        "prioridad": "Alta",
+        "descripcion": f"...",
+        "recomendacion": "...",
+        "datos": top_productos
+    }
+
+
+def alerta_existencia_critica(df):
+    productos = df[
+        (df["existencia"] <= 0) &
+        (df["por_pedir"] > 0)
+    ].copy()
+
+    if productos.empty:
+        return {
+            "titulo": "Productos con existencia crítica",
+            "prioridad": "Baja",
+            "descripcion": "No se encontraron productos sin existencia y con pedido sugerido.",
+            "recomendacion": "No se requiere acción inmediata por desabasto.",
+            "datos": productos
+        }
+
+    productos = productos.sort_values(
+        by="por_pedir",
+        ascending=False
+    )
+
+    cantidad_pareto = max(
+        1,
+        int(len(productos) * 0.20)
+    )
+
+    productos_pareto = productos.head(cantidad_pareto)
+
+    return {
+        "titulo": "Productos con existencia crítica",
+        "prioridad": "Alta",
+        "descripcion": f"Se encontraron {len(productos)} productos sin existencia y con pedido sugerido. Se muestran los {len(productos_pareto)} más importantes según Pareto 20%.",
+        "recomendacion": "Revise primero estos productos, porque representan el grupo prioritario para reducir el riesgo de desabasto.",
+        "datos": productos_pareto
+    }
+
 def mostrar_hallazgo(hallazgo):
     print("\n" + "=" * 70)
     print(hallazgo["titulo"].upper())
@@ -249,6 +293,10 @@ def ejecutar_hallazgos():
 
     hallazgos.append(
         alerta_valor_alto(situacion)
+    )
+
+    hallazgos.append(
+        alerta_existencia_critica(situacion)
     )
 
     return hallazgos
