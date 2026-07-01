@@ -193,6 +193,8 @@ def alerta_valor_alto(df, top_n=10):
             "titulo": "Productos con mayor inversión por comprar",
             "prioridad": "Baja",
             "descripcion": "No hay productos con pedido sugerido.",
+            "impacto": "Sin impacto económico detectado.",
+            "criterio_utilizado": "Productos con pedido sugerido, ordenados por valor económico (valor_por_pedir).",
             "recomendacion": "No se requiere revisión por inversión.",
             "datos": productos
         }
@@ -213,18 +215,11 @@ def alerta_valor_alto(df, top_n=10):
         "titulo": "Productos con mayor inversión por comprar",
         "prioridad": "Alta",
         "descripcion": f"Los {len(top_productos)} productos principales concentran ${valor_top:,.2f}, equivalente al {porcentaje:.2f}% del valor total por pedir.",
+        "impacto": f"Los productos mostrados concentran ${valor_top:,.2f} de la inversión total por pedir.",
+        "criterio_utilizado": "Productos con pedido sugerido, ordenados por mayor valor económico (valor_por_pedir).",
         "recomendacion": "Revise estos productos antes de autorizar la compra, porque concentran la mayor parte del dinero a invertir.",
         "datos": top_productos
     }
-
-    return {
-        "titulo": "Productos con mayor inversión por comprar",
-        "prioridad": "Alta",
-        "descripcion": f"...",
-        "recomendacion": "...",
-        "datos": top_productos
-    }
-
 
 def alerta_existencia_critica(df):
     productos = df[
@@ -237,6 +232,8 @@ def alerta_existencia_critica(df):
             "titulo": "Productos con existencia crítica",
             "prioridad": "Baja",
             "descripcion": "No se encontraron productos sin existencia y con pedido sugerido.",
+            "impacto": "Sin riesgo de desabasto detectado.",
+            "criterio_utilizado": "Productos con existencia menor o igual a cero y pedido sugerido mayor a cero.",
             "recomendacion": "No se requiere acción inmediata por desabasto.",
             "datos": productos
         }
@@ -252,11 +249,14 @@ def alerta_existencia_critica(df):
     )
 
     productos_pareto = productos.head(cantidad_pareto)
+    productos_omitidos = len(productos) - len(productos_pareto)
 
     return {
         "titulo": "Productos con existencia crítica",
         "prioridad": "Alta",
-        "descripcion": f"Se encontraron {len(productos)} productos sin existencia y con pedido sugerido. Se muestran los {len(productos_pareto)} más importantes según Pareto 20%.",
+        "descripcion": f"Se encontraron {len(productos)} productos sin existencia y con pedido sugerido. Se muestran los {len(productos_pareto)} más importantes según Pareto 20%. Quedan {productos_omitidos} productos fuera de este resumen.",
+        "impacto": f"El grupo mostrado concentra {len(productos_pareto)} productos prioritarios de un total de {len(productos)} productos críticos.",
+        "criterio_utilizado": "Productos con existencia menor o igual a cero, pedido sugerido mayor a cero, ordenados por mayor cantidad por pedir y filtrados con Pareto 20%.",
         "recomendacion": "Revise primero estos productos, porque representan el grupo prioritario para reducir el riesgo de desabasto.",
         "datos": productos_pareto
     }
@@ -267,6 +267,8 @@ def mostrar_hallazgo(hallazgo):
     print("=" * 70)
     print(f"Prioridad: {hallazgo['prioridad']}")
     print(f"Descripción: {hallazgo['descripcion']}")
+    print(f"Impacto: {hallazgo['impacto']}")
+    print(f"Criterio utilizado: {hallazgo['criterio_utilizado']}")
     print(f"Recomendación: {hallazgo['recomendacion']}")
 
     datos = hallazgo["datos"]
